@@ -11,10 +11,12 @@ import UIKit
 
 @objc public protocol GrowingTextViewDelegate: UITextViewDelegate {
     @objc optional func textViewDidChangeHeight(_ textView: GrowingTextView, height: CGFloat)
+    @objc optional func textViewGetLastHeight(_ textView: GrowingTextView, height: CGFloat)
 }
 
 @IBDesignable @objc
 open class GrowingTextView: UITextView {
+     
     override open var text: String! {
         didSet { setNeedsDisplay() }
     }
@@ -112,6 +114,10 @@ open class GrowingTextView: UITextView {
         if (heightConstraint == nil) {
             heightConstraint = NSLayoutConstraint(item: self, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: height)
             addConstraint(heightConstraint!)
+        }
+        
+        if let delegate = delegate as? GrowingTextViewDelegate {
+            delegate.textViewGetLastHeight?(self, height: height)
         }
         
         // Update height constraint if needed
